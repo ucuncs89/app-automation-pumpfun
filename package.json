@@ -12,6 +12,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@solana/web3.js": "^1.95.5",
+    "axios": "^1.7.9",
+    "bs58": "^6.0.0",
+    "random-memes": "^3.2.6",
     "typescript": "^5.7.2",
     "ws": "^8.18.0"
   },

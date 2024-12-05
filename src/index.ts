@@ -1,48 +1,17 @@
-import * as WebSocket from "ws";
+import { downloadPath } from "./config";
+import { tags } from "./config/array-tags";
+import { downloadGifAndSave, getRandomGif } from "./services/giphy";
 
-// Define payload types
-interface Payload {
-  method: string;
-  keys?: string[];
+async function main() {
+  const randomTags = tags[Math.floor(Math.random() * tags.length)];
+  const randomGif = await getRandomGif(randomTags);
+  const titleFix = randomGif.title.split(" GIF")[0];
+  const filePath = await downloadGifAndSave(
+    randomGif.gif_url,
+    titleFix,
+    downloadPath
+  );
+  console.log(randomGif, titleFix);
 }
 
-const ws = new WebSocket("wss://pumpportal.fun/api/data");
-
-ws.on("open", () => {
-  // Subscribing to token creation events
-  const subscribeNewTokenPayload: Payload = {
-    method: "subscribeNewToken",
-  };
-  ws.send(JSON.stringify(subscribeNewTokenPayload));
-
-  // Subscribing to trades made by accounts
-  const subscribeAccountTradePayload: Payload = {
-    method: "subscribeAccountTrade",
-    keys: ["AArPXm8JatJiuyEffuC1un2Sc835SULa4uQqDcaGpAjV"],
-  };
-  ws.send(JSON.stringify(subscribeAccountTradePayload));
-
-  // Subscribing to trades on tokens
-  const subscribeTokenTradePayload: Payload = {
-    method: "subscribeTokenTrade",
-    keys: ["91WNez8D22NwBssQbkzjy4s2ipFrzpmn5hfvWVe2aY5p"],
-  };
-  ws.send(JSON.stringify(subscribeTokenTradePayload));
-});
-
-ws.on("message", (data: WebSocket.RawData) => {
-  try {
-    const parsedData = JSON.parse(data.toString());
-    console.log(parsedData);
-  } catch (error) {
-    console.error("Error parsing message data:", error);
-  }
-});
-
-ws.on("error", (error: any) => {
-  console.error("WebSocket error:", error);
-});
-
-ws.on("close", () => {
-  console.log("WebSocket connection closed.");
-});
+main();
